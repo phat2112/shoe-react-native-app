@@ -8,9 +8,11 @@ import {
   Image,
   Animated,
   Easing,
+  Dimensions
 } from 'react-native';
 
 const ShoeItem = ({brand, onPress}) => {
+  const windowWidth = Dimensions.get('window').width; 
   const [fadeOut] = useState(new Animated.Value(0));
   const IMAGE_CONFIG = [
     {brand: 'Adidas', url: require('../../assets/images/Adidas.png')},
@@ -34,7 +36,7 @@ const ShoeItem = ({brand, onPress}) => {
  
   return (
     <TouchableOpacity activeOpacity={0.5} onPress={onPress}>
-      <Animated.View style={[styles.listContainer, {opacity: fadeOut}]}>
+      <Animated.View style={[styles.listContainer, {opacity: fadeOut}, {width: ( windowWidth / 2 ) - 20}]}>
         <Text style={styles.brandName}>{brand}</Text>
         <Image
           style={{width: 100, height: 100}}
@@ -47,9 +49,8 @@ const ShoeItem = ({brand, onPress}) => {
 const styles = StyleSheet.create({
   listContainer: {
     height: 180,
-    width: 180,
-    margin: 10,
     marginTop: 20,
+    margin: 10,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,

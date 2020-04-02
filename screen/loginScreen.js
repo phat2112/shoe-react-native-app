@@ -12,6 +12,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   AsyncStorage,
+  Dimensions,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {AuthActions} from '../stores/Auth/Actions';
@@ -24,10 +25,8 @@ import SecureStorage, {
 } from 'react-native-secure-storage';
 
 const LoginScreen = ({navigation, authLogin, authToken}) => {
-  // let userLoginToken = AsyncStorage.getItem('authToken');
-  // if (authToken) {
-  //   navigation.navigate('Index');
-  // }
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
   const storeToken = async tokenValue => {
     const config = {
       accessControl: ACCESS_CONTROL.BIOMETRY_ANY_OR_DEVICE_PASSCODE,
@@ -58,7 +57,9 @@ const LoginScreen = ({navigation, authLogin, authToken}) => {
   const [password, setPassword] = useState('');
   const [invalidTypeUsername, setInvalidTypeUserName] = useState(false);
   const [invalidTypePassword, setInvalidTypePassword] = useState(false);
-  const [toggleForm] = useState(new Animated.Value(-250));
+  const [valueMsgPass, setValueMsgPass] = useState('')
+  const [valueMsg, setValueMsg] = useState('')
+  const [toggleForm] = useState(new Animated.Value(-300));
   const toggleFormLogin = valueButton => {
     Animated.timing(toggleForm, {
       toValue: valueButton,
@@ -74,18 +75,32 @@ const LoginScreen = ({navigation, authLogin, authToken}) => {
     }).start();
   };
   const closeSigninHandler = toggleForm.interpolate({
-    inputRange: [-250, 0],
+    inputRange: [-300, 0],
     outputRange: [1, 0],
   });
   const handleLogin = () => {
     if (!password && !username) {
       setInvalidTypeUserName(true);
       setInvalidTypePassword(true);
-    } else {
+      setValueMsg('Field is required');
+      setValueMsgPass('Field is required')
+    }
+    else if(!password && username){
+      setInvalidTypeUserName(false);
+      setInvalidTypePassword(true);
+    }
+    else if(password && !username){
+      setInvalidTypeUserName(true);
+      setInvalidTypePassword(false);
+    } 
+    else {
       setInvalidTypeUserName(false);
       setInvalidTypePassword(false);
+      console.log('authToken',authToken)
       authLogin({email: username, password: password});
-      navigation.navigate('Index');
+    }
+    if(authToken !== null){
+      navigation.navigate('Index')
     }
   };
 
@@ -94,11 +109,15 @@ const LoginScreen = ({navigation, authLogin, authToken}) => {
       let valiedatedMail = helper.emailValidate(username);
       if (!valiedatedMail) {
         setInvalidTypeUserName(true);
+        setValueMsg('Your email is invalid')
       } else {
         setInvalidTypeUserName(false);
       }
     }
-  }, [username]);
+    if(password && password.length <= 4){
+      setValueMsgPass('your pass is too short')
+    }
+  }, [username, password]);
 
   useEffect(() => {
     if (authToken !== null) {
@@ -126,7 +145,7 @@ const LoginScreen = ({navigation, authLogin, authToken}) => {
             <Text>Sing In</Text>
           </TouchableOpacity>
         </Animated.View>
-        <Animated.View style={[styles.formContainer, {bottom: toggleForm}]}>
+        <Animated.View style={[styles.formContainer, {bottom: toggleForm}, {width: windowWidth}]}>
           <Text style={{fontSize: 20, color: '#16222A'}}>Login</Text>
           <TextInput
             style={[
@@ -142,9 +161,7 @@ const LoginScreen = ({navigation, authLogin, authToken}) => {
               styles.inputMsg,
               {display: invalidTypeUsername ? 'flex' : 'none'},
             ]}>
-            {invalidTypeUsername
-              ? 'Your email is invalid'
-              : 'Field is required'}
+              {valueMsg}
           </Text>
           <TextInput
             style={[
@@ -153,7 +170,7 @@ const LoginScreen = ({navigation, authLogin, authToken}) => {
             ]}
             value={password}
             placeholder="Password"
-            keyboardType="invisible-password"
+            secureTextEntry={true} 
             onChangeText={text => setPassword(text)}
           />
           <Text
@@ -161,15 +178,17 @@ const LoginScreen = ({navigation, authLogin, authToken}) => {
               styles.inputMsg,
               {display: invalidTypePassword ? 'flex' : 'none'},
             ]}>
-            Field is required
+            {valueMsgPass}
           </Text>
-          <TouchableOpacity
+         <View style={{flex: 1, justifyContent: 'center', alignItems:'center',}}>
+         <TouchableOpacity
             style={styles.submitButton}
             onPress={() => {
               handleLogin();
             }}>
             <Text style={{color: 'white', fontSize: 18}}>Login</Text>
           </TouchableOpacity>
+         </View>
         </Animated.View>
       </View>
     </TouchableWithoutFeedback>
@@ -184,12 +203,12 @@ LoginScreen.propTypes = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
   },
   imageContainer: {
     flex: 1,
     resizeMode: 'cover',
     width: 420,
-    position: 'relative',
   },
   signInButton: {
     width: 200,
@@ -206,9 +225,8 @@ const styles = StyleSheet.create({
   formContainer: {
     position: 'absolute',
     backgroundColor: '#fff',
-    width: 420,
-    height: 250,
-    bottom: -250,
+    height: 300,
+    bottom: -300,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     left: 0,

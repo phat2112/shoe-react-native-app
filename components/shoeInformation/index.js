@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import * as helper from '../../Utils/helper';
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, Image, StyleSheet, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {connect} from 'react-redux';
 import {ShoeActions} from '../../stores/shoes/actions';
@@ -16,6 +16,7 @@ const ShoeInformation = ({
   getShoeInformation,
   addtoCart,
 }) => {
+  const windowWidth = Dimensions.get('window').width;
   const shoeInfoId = route.params.shoeInfoId;
   const [count, setCount] = useState(1);
   const cartHandler = (shoeData, quantity) => {
@@ -35,7 +36,7 @@ const ShoeInformation = ({
     <View style={{flex: 1, padding: 10}}>
       {shoeInformation ? (
         <Image
-          style={[styles.shoeInfoImage]}
+          style={[styles.shoeInfoImage, {width: windowWidth -20 }]}
           source={{
             uri: helper.handleUploadImage(shoeInformation.toJS().image[0].url),
           }}
@@ -87,6 +88,7 @@ const ShoeInformation = ({
 const styles = StyleSheet.create({
   shoeInfoImage: {
     height: 250,
+    resizeMode: 'contain',
   },
   infoShoe: {
     fontSize: 20,

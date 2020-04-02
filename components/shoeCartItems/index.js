@@ -16,8 +16,6 @@ const ShoeCartItems = ({
   name,
   image,
   price,
-  getShoeInformation,
-  shoeInformation,
   removeCart,
 }) => {
   const getTotal = (quantity, price) => {
@@ -25,16 +23,11 @@ const ShoeCartItems = ({
     let total = quantity * newPrice;
     return total + '$';
   };
-  // useEffect(() => {
-  //   if (idShoe) {
-  //     getShoeInformation(idShoe);
-  //   }
-  // }, [idShoe]);
   return (
     <View style={styles.listCartContainer}>
       {image ? (
         <Image
-          style={styles.listCartImage}
+          style={[styles.listCartImage]}
           source={{
             uri: image,
           }}
@@ -68,6 +61,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 200,
     marginRight: 10,
+    resizeMode: 'contain'
   },
   listCartContent: {
     flex: 1,

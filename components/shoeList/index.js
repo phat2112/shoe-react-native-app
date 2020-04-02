@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
-import {View, FlatList, StyleSheet, Text} from 'react-native';
+import {View, FlatList, StyleSheet, Text, Dimensions} from 'react-native';
 import {connect} from 'react-redux';
 import {ShoeActions} from '../../stores/shoes/actions';
 import {ShoeSelectors} from '../../stores/shoes/selectors';
@@ -8,6 +8,7 @@ import ShoeItem from '../shoeItem';
 
 
 const ShoeList = ({navigation, getShoeList, listShoe}) => {
+  const windowWidth = Dimensions.get('window').width;
   const data = [
     {id: 1, shoeBrand: 'Nike'},
     {id: 2, shoeBrand: 'Adidas'},
@@ -21,6 +22,7 @@ const ShoeList = ({navigation, getShoeList, listShoe}) => {
 
   return (
     <FlatList
+      style={[styles.listShoeContainer]}
       numColumns={2}
       data={listShoe ? listShoe.toJS() : data}
       renderItem={({item}) => (
@@ -34,6 +36,9 @@ const ShoeList = ({navigation, getShoeList, listShoe}) => {
   );
 };
 const styles = StyleSheet.create({
+  listShoeContainer: {
+    flex: 1,
+  }
 });
 
 ShoeList.propTypes = {
